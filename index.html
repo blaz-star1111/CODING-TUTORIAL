@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="sl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#08111f">
+  <title>Coding Database</title>
+  <style>
+    :root{--bg:#07101d;--panel:#101c2d;--panel2:#16243a;--text:#f4f7fb;--muted:#a7b4c7;--accent:#39d98a;--blue:#5ea7ff;--border:#263850;--danger:#ff6b6b}
+    *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:linear-gradient(145deg,#06101d 0%,#0a1728 55%,#07101d 100%);color:var(--text);min-height:100vh}
+    button,input,select{font:inherit}.wrap{max-width:1180px;margin:auto;padding:24px}.hero{padding:28px;border:1px solid var(--border);border-radius:24px;background:linear-gradient(135deg,rgba(94,167,255,.14),rgba(57,217,138,.08));box-shadow:0 18px 50px rgba(0,0,0,.28)}
+    .eyebrow{color:var(--accent);font-weight:800;letter-spacing:.14em;font-size:.78rem}.hero h1{margin:.35rem 0 .45rem;font-size:clamp(2rem,5vw,4rem)}.hero p{color:var(--muted);margin:0 0 22px;max-width:760px;line-height:1.6}
+    .searchrow{display:grid;grid-template-columns:1fr 200px;gap:12px}.searchbox{position:relative}.searchbox span{position:absolute;left:16px;top:50%;transform:translateY(-50%)}input,select{width:100%;padding:14px 16px;border-radius:14px;border:1px solid var(--border);background:#091524;color:var(--text);outline:none}input{padding-left:46px}input:focus,select:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(94,167,255,.14)}
+    .stats{display:flex;gap:16px;flex-wrap:wrap;margin-top:16px;color:var(--muted);font-size:.92rem}.stats strong{color:white}.sectionhead{display:flex;align-items:end;justify-content:space-between;gap:12px;margin:28px 0 14px}.sectionhead h2{margin:0}.sectionhead p{margin:0;color:var(--muted)}
+    .chips{display:flex;gap:9px;flex-wrap:wrap}.chip{border:1px solid var(--border);background:var(--panel);color:var(--text);padding:9px 13px;border-radius:999px;cursor:pointer}.chip:hover,.chip.active{background:var(--accent);color:#052014;border-color:var(--accent);font-weight:800}
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}.card{display:flex;flex-direction:column;min-height:238px;padding:19px;border-radius:20px;background:rgba(16,28,45,.92);border:1px solid var(--border);box-shadow:0 12px 28px rgba(0,0,0,.18);transition:.2s}.card:hover{transform:translateY(-3px);border-color:#416287}.icon{width:44px;height:44px;border-radius:13px;display:grid;place-items:center;background:var(--panel2);font-size:1.35rem}.card h3{margin:15px 0 7px}.card p{margin:0;color:var(--muted);line-height:1.5;font-size:.94rem}.tags{display:flex;gap:7px;flex-wrap:wrap;margin:14px 0}.tag{font-size:.76rem;padding:5px 8px;border-radius:999px;background:#0a1626;color:#b9cae0;border:1px solid #273b55}.actions{display:flex;gap:9px;margin-top:auto}.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;text-decoration:none;border:0;border-radius:12px;padding:10px 13px;cursor:pointer;font-weight:800}.primary{background:var(--accent);color:#052014;flex:1}.secondary{background:#1b2d46;color:white;border:1px solid #344b69}.empty{display:none;text-align:center;padding:50px 18px;color:var(--muted);border:1px dashed var(--border);border-radius:18px}.info{margin-top:28px;padding:18px;border:1px solid var(--border);border-radius:18px;background:#0c1828;color:var(--muted);line-height:1.6}.info code{color:#b9ffd9}.footer{text-align:center;color:#70839d;padding:32px 0 12px;font-size:.86rem}
+    @media(max-width:680px){.wrap{padding:14px}.hero{padding:20px}.searchrow{grid-template-columns:1fr}.sectionhead{align-items:start;flex-direction:column}.grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+<main class="wrap">
+  <section class="hero">
+    <div class="eyebrow">OSEBNA TEHNIČNA KNJIŽNICA</div>
+    <h1>🔧 Coding Database</h1>
+    <p>Hitra zbirka PDF navodil za coding, diagnostiko, kamere, navigacije in krmilne enote. Išči po vozilu, programu, modulu ali naslovu.</p>
+    <div class="searchrow">
+      <label class="searchbox"><span>🔎</span><input id="search" type="search" placeholder="Išči: Passat B9, ABS, 5F, Area View, ODIS ..." autocomplete="off"></label>
+      <select id="sort" aria-label="Razvrščanje"><option value="new">Najnovejše najprej</option><option value="az">Naslov A–Ž</option><option value="category">Po kategoriji</option></select>
+    </div>
+    <div class="stats"><span>Prikazanih: <strong id="visibleCount">0</strong></span><span>Skupaj navodil: <strong id="totalCount">0</strong></span></div>
+  </section>
+
+  <div class="sectionhead"><div><h2>Kategorije</h2><p>Izberi področje ali uporabi iskalnik.</p></div></div>
+  <nav class="chips" id="chips" aria-label="Kategorije"></nav>
+
+  <div class="sectionhead"><div><h2>Navodila</h2><p id="resultText">Vsa navodila</p></div></div>
+  <section class="grid" id="grid"></section>
+  <div class="empty" id="empty"><div style="font-size:2rem">📭</div><h3>Ni zadetkov</h3><p>Poskusi z drugim izrazom ali izberi kategorijo »Vse«.</p></div>
+
+  <aside class="info"><strong>Kako dodaš novo navodilo:</strong> PDF naloži v ustrezno mapo, nato v spodnjem seznamu <code>documents</code> podvoji en zapis in spremeni naslov, opis, kategorijo, oznake ter pot do datoteke. Imena datotek naj bodo brez šumnikov in presledkov, na primer <code>area-view-passat-b9.pdf</code>.</aside>
+  <footer class="footer">Coding Database • osebna zbirka tehničnih navodil</footer>
+</main>
+<script>
+const documents = [
+  {title:'Area View coding',description:'Navodila za konfiguracijo sistema kamer in osnovno parametrizacijo.',category:'Kamere',icon:'📷',tags:['Passat B9','Area View','6C'],file:'pdf/passat-b9/area-view-coding.pdf',date:'2026-10-13'},
+  {title:'MIB3 in modul 5F',description:'Zbirka postopkov in opomb za infotainment ter navigacijske funkcije.',category:'MIB / Navigacije',icon:'🧭',tags:['Passat B9','MIB3','5F'],file:'pdf/passat-b9/mib3-modul-5f.pdf',date:'2026-10-12'},
+  {title:'OBDeleven osnovni coding',description:'Osnovni coding, adaptacije in beleženje prvotnih vrednosti.',category:'OBDeleven',icon:'🟢',tags:['OBDeleven','Coding','Adaptation'],file:'pdf/obdeleven/osnovni-coding.pdf',date:'2026-10-11'},
+  {title:'VCDS pregled modulov',description:'Pregled najpogostejših krmilnih enot in organizacija diagnostičnih zapisov.',category:'VCDS',icon:'🔵',tags:['VCDS','Auto-Scan','Moduli'],file:'pdf/vcds/pregled-modulov.pdf',date:'2026-10-10'},
+  {title:'ODIS servisna navodila',description:'Osebne opombe za diagnostični potek in organizacijo dokumentacije.',category:'ODIS',icon:'🟠',tags:['ODIS','Diagnostika','VW'],file:'pdf/odis/servisna-navodila.pdf',date:'2026-10-09'},
+  {title:'ABS coding Passat B8',description:'Referenčno navodilo za shranjevanje in pregled kodiranja ABS enote.',category:'Passat B8 / B8.5',icon:'🚗',tags:['Passat B8','ABS','03'],file:'pdf/passat-b8/abs-coding.pdf',date:'2026-10-08'},
+  {title:'DCC Pro opombe',description:'Tehnične opombe in kontrolni seznam za sistem DCC Pro.',category:'Passat B9',icon:'🚙',tags:['Passat B9','DCC Pro','14'],file:'pdf/passat-b9/dcc-pro.pdf',date:'2026-10-07'},
+  {title:'Retrofit vzvratne kamere',description:'Kontrolni seznam za montažo, ožičenje in zaključni pregled.',category:'Kamere',icon:'🎥',tags:['Kamera','Retrofit','Ožičenje'],file:'pdf/kamere/retrofit-vzvratne-kamere.pdf',date:'2026-10-06'}
+];
+const categories=['Vse',...new Set(documents.map(d=>d.category))];
+let active='Vse';
+const grid=document.getElementById('grid'), chips=document.getElementById('chips'), search=document.getElementById('search'), sort=document.getElementById('sort');
+const norm=s=>(s||'').toLocaleLowerCase('sl').normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+function drawChips(){chips.innerHTML=categories.map(c=>`<button class="chip ${c===active?'active':''}" data-cat="${c}">${c}</button>`).join('');chips.querySelectorAll('button').forEach(b=>b.onclick=()=>{active=b.dataset.cat;drawChips();render();});}
+function render(){const q=norm(search.value);let items=documents.filter(d=>(active==='Vse'||d.category===active)&&norm([d.title,d.description,d.category,...d.tags].join(' ')).includes(q));if(sort.value==='az')items.sort((a,b)=>a.title.localeCompare(b.title,'sl'));else if(sort.value==='category')items.sort((a,b)=>a.category.localeCompare(b.category,'sl'));else items.sort((a,b)=>b.date.localeCompare(a.date));grid.innerHTML=items.map(d=>`<article class="card"><div class="icon">${d.icon}</div><h3>${d.title}</h3><p>${d.description}</p><div class="tags">${d.tags.map(t=>`<span class="tag">${t}</span>`).join('')}</div><div class="actions"><a class="btn primary" href="${d.file}" target="_blank" rel="noopener">📄 Odpri PDF</a><button class="btn secondary" onclick="copyLink('${d.file}',this)" title="Kopiraj povezavo">🔗</button></div></article>`).join('');document.getElementById('empty').style.display=items.length?'none':'block';document.getElementById('visibleCount').textContent=items.length;document.getElementById('totalCount').textContent=documents.length;document.getElementById('resultText').textContent=active==='Vse'?'Vsa navodila':active;}
+async function copyLink(file,btn){const url=new URL(file,location.href).href;try{await navigator.clipboard.writeText(url);const old=btn.textContent;btn.textContent='✓';setTimeout(()=>btn.textContent=old,1200)}catch{prompt('Kopiraj povezavo:',url)}}
+search.addEventListener('input',render);sort.addEventListener('change',render);drawChips();render();
+</script>
+</body>
+</html>
